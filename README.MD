@@ -13,14 +13,19 @@ $$I = \iint f(x,y;\Phi)dxdy$$
 where we combine pixel filter and radiance into scene function $f(x,y)=k(x,y)L(x,y)$ and $\Phi$ are some rendering parameters we are interested in, such as position of a mesh vertex. So the gradients of the intergal with respect to $\Phi$ can be written as:
 $$\nabla I = \nabla \iint f(x,y;\Phi)dxdy$$ 
 
-![image](https://github.com/AndyWangZH/Differentiable-Rendering-Notebook/blob/main/image/Redner_sampling.png#pic_center)
+
+<p align="center"> 
+<img src="https://github.com/AndyWangZH/Differentiable-Rendering-Notebook/blob/main/image/Redner_sampling.png">
+</p>
 
 Notice that the integral usually dosen't contain a closed-form solution so we rely on Monte Carlo integration to estimate the pixel color $I$ which is commonly used in Physical Based Rendering.(P.S. SG is also used to approximate the rendering function but in a closed-form solution, which will be introduced later.) However we cannot take the naive approach of applying the same Monte Carlo sampler to estimate the gradient $\nabla I$, since the scene function $f$ is not necessarily differentiable with respect to scene parameters. A direct example is shown below.
 
 We are interested in computing the derivative of the color of pixel $I$ with respect to the green triangle vertices $v$ moving up. When using traditional area sampling (yellow samples), $I(v)$ is a step function of $v$ which is not continous and not differentiable at the point of discontinuity $v^*$. **A key observation is that all discontinuities happen at triangle edges.** So Tzu-Mao Li explicitly integrate over the discontinuities and here I give a detailed description about their works. A 2D triangle edge (as we consider primary visibility in screen space) splits the space into two half-spaces ($f_u$ and $f_l$) and we can model it as a Heaviside step function $\theta$:
 $$\theta(\alpha(x,y))f_u(x,y) + \theta(-\alpha(x,y))f_l(x,y))$$ 
 
-![image](https://github.com/AndyWangZH/Differentiable-Rendering-Notebook/blob/main/image/Redner_halfspace.png#pic_center)
+<p align="center"> 
+<img src="https://github.com/AndyWangZH/Differentiable-Rendering-Notebook/blob/main/image/Redner_halfspace.png#pic_center">
+</p>
 
 where $f_u$ represents the upper half-space, $f_l$ represents the lower
 half-space and $\alpha(x,y)$ defines the edge equation formed by the triangles. For each edge with two endpoints $(a_x, a_y), (b_x,b_y)$, we can construct the edge equation by forming the line: 
@@ -30,17 +35,15 @@ We can rewrite the scene function $f$ as a summation of Heaviside step functions
 $$\iint f(x,y)dxdy = \sum_{i} \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy $$
 
 We want to analytically differentiate the Heaviside step function $\theta$ and explicitly integrate over its derivative – the Dirac delta function   $\delta$. To do this we first swap the gradient operator inside the integral, then we use product rule to separate the integral into two:
-$$\begin{aligned}
-\nabla \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy\\
-= \iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy\\
-+ \iint \nabla f_i(x,y) \theta(\alpha_i(x,y))dxdy
-\end{aligned}$$
+$$\nabla \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy$$
+$$= \iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy$$
+$$+ \iint \nabla f_i(x,y) \theta(\alpha_i(x,y))dxdy$$
 
 We can estimate the gradient using two Monte Carlo estimators. The first one estimates the integral over the edges of triangles containing the Dirac delta functions, and the second estimates the original pixel integral except the smooth function $f_i$ is replaced by its gradient, which can be computed through automatic differentiation.
 
 To estimate the integral containing Dirac delta functions, we eliminate the Dirac function by performing variable substitution to rewrite the first term containing the Dirac delta function to an integral that integrates over the edge, that is, over the regions where $\alpha_i(x,y) = 0$:
-$$\iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy
-= \int_{\alpha_i(x,y)=0} \frac{\nabla \alpha_i(x,y)}{\lVert \nabla_{x,y} \alpha_i(x,y) \rVert} f_i(x,y)d\sigma(x,y)$$
+$$\iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy$$
+$$= \int_{\alpha_i(x,y)=0} \frac{\nabla \alpha_i(x,y)}{\lVert \nabla_{x,y} \alpha_i(x,y) \rVert} f_i(x,y)d\sigma(x,y)$$
 
 where $\lVert \nabla_{x,y} \alpha_i(x,y) \rVert$ is the $L^2$ length of the gradient of the edge equations $\alpha_i$ with respect to $x,y$, which takes the Jacobian of the variable substitution into account. $\sigma(x,y)$ is the measure of the length on the edge. (*Sorry for my poor math as I currently can't understand how this variable substitution is done and how can this help for differentiable.*)
 
