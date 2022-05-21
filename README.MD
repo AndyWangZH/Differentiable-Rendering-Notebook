@@ -13,12 +13,11 @@ $$I = \iint f(x,y;\Phi)dxdy$$
 where we combine pixel filter and radiance into scene function $f(x,y)=k(x,y)L(x,y)$ and $\Phi$ are some rendering parameters we are interested in, such as position of a mesh vertex. So the gradients of the intergal with respect to $\Phi$ can be written as:
 $$\nabla I = \nabla \iint f(x,y;\Phi)dxdy$$ 
 
+Notice that the integral usually dosen't contain a closed-form solution so we rely on Monte Carlo integration to estimate the pixel color $I$ which is commonly used in Physical Based Rendering.(P.S. SG is also used to approximate the rendering function but in a closed-form solution, which will be introduced later.) However we cannot take the naive approach of applying the same Monte Carlo sampler to estimate the gradient $\nabla I$, since the scene function $f$ is not necessarily differentiable with respect to scene parameters. A direct example is shown below.
 
 <p align="center"> 
 <img src="https://github.com/AndyWangZH/Differentiable-Rendering-Notebook/blob/main/image/Redner_sampling.png">
 </p>
-
-Notice that the integral usually dosen't contain a closed-form solution so we rely on Monte Carlo integration to estimate the pixel color $I$ which is commonly used in Physical Based Rendering.(P.S. SG is also used to approximate the rendering function but in a closed-form solution, which will be introduced later.) However we cannot take the naive approach of applying the same Monte Carlo sampler to estimate the gradient $\nabla I$, since the scene function $f$ is not necessarily differentiable with respect to scene parameters. A direct example is shown below.
 
 We are interested in computing the derivative of the color of pixel $I$ with respect to the green triangle vertices $v$ moving up. When using traditional area sampling (yellow samples), $I(v)$ is a step function of $v$ which is not continous and not differentiable at the point of discontinuity $v^*$. **A key observation is that all discontinuities happen at triangle edges.** So Tzu-Mao Li explicitly integrate over the discontinuities and here I give a detailed description about their works. A 2D triangle edge (as we consider primary visibility in screen space) splits the space into two half-spaces ($f_u$ and $f_l$) and we can model it as a Heaviside step function $\theta$:
 $$\theta(\alpha(x,y))f_u(x,y) + \theta(-\alpha(x,y))f_l(x,y))$$ 
