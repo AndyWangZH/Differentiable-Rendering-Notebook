@@ -45,12 +45,10 @@ $$\iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy
 where $\lVert \nabla_{x,y} \alpha_i(x,y) \rVert$ is the $L^2$ length of the gradient of the edge equations $\alpha_i$ with respect to $x,y$, which takes the Jacobian of the variable substitution into account. $\sigma(x,y)$ is the measure of the length on the edge. (*Sorry for my poor math as I currently can't understand how this variable substitution is done and how can this help for differentiable.*)
 
 The gradients of the edge equations $\alpha_i$ are:
-$$\begin{align}
-\lVert \nabla_{x,y} \alpha_i \rVert = \sqrt{(a_x - b_x)^2 + (a_y - b_y)^2}\\
-\frac{\partial a_i}{\partial a_x} = b_y - y, \frac{\partial a_i}{\partial a_y} = x - b_x\\
-\frac{\partial a_i}{\partial b_x} = y - a_y, \frac{\partial a_i}{\partial b_y} = a_x - x\\
-\frac{\partial a_i}{\partial x} = a_y - b_y, \frac{\partial a_i}{\partial y} = b_x - a_x
-\end{align}$$
+$$\lVert \nabla_{x,y} \alpha_i \rVert = \sqrt{(a_x - b_x)^2 + (a_y - b_y)^2}$$
+$$\frac{\partial a_i}{\partial a_x} = b_y - y, \frac{\partial a_i}{\partial a_y} = x - b_x$$
+$$\frac{\partial a_i}{\partial b_x} = y - a_y, \frac{\partial a_i}{\partial b_y} = a_x - x$$
+$$\frac{\partial a_i}{\partial x} = a_y - b_y, \frac{\partial a_i}{\partial y} = b_x - a_x$$
 
 As a byproduct of the derivation, we also obtain the screen space gradients $\partial x$ and $\partial y$. We can obtain the gradient with respect to other parameters, such as camera parameters, 3D vertex positions, or vertex normals by propagating the derivatives from the projected triangle vertices
 using the chain rule:
