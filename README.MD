@@ -30,11 +30,11 @@ We can rewrite the scene function $f$ as a summation of Heaviside step functions
 $$\iint f(x,y)dxdy = \sum_{i} \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy $$
 
 We want to analytically differentiate the Heaviside step function $\theta$ and explicitly integrate over its derivative – the Dirac delta function   $\delta$. To do this we first swap the gradient operator inside the integral, then we use product rule to separate the integral into two:
-$$\begin{align}
-\nabla \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy \\
-= \iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy  \\
+$$\begin{aligned}
+\nabla \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy\\
+= \iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy\\
 + \iint \nabla f_i(x,y) \theta(\alpha_i(x,y))dxdy
-\end{align}$$
+\end{aligned}$$
 
 We can estimate the gradient using two Monte Carlo estimators. The first one estimates the integral over the edges of triangles containing the Dirac delta functions, and the second estimates the original pixel integral except the smooth function $f_i$ is replaced by its gradient, which can be computed through automatic differentiation.
 
