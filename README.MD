@@ -30,27 +30,27 @@ We can rewrite the scene function $f$ as a summation of Heaviside step functions
 $$\iint f(x,y)dxdy = \sum_{i} \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy $$
 
 We want to analytically differentiate the Heaviside step function $\theta$ and explicitly integrate over its derivative – the Dirac delta function   $\delta$. To do this we first swap the gradient operator inside the integral, then we use product rule to separate the integral into two:
-$$\begin{aligned}
+$$\begin{align}
 \nabla \iint \theta(\alpha_i(x,y))f_i(x,y)dxdy \\
 = \iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy  \\
 + \iint \nabla f_i(x,y) \theta(\alpha_i(x,y))dxdy
-\end{aligned}$$
+\end{align}$$
 
 We can estimate the gradient using two Monte Carlo estimators. The first one estimates the integral over the edges of triangles containing the Dirac delta functions, and the second estimates the original pixel integral except the smooth function $f_i$ is replaced by its gradient, which can be computed through automatic differentiation.
 
 To estimate the integral containing Dirac delta functions, we eliminate the Dirac function by performing variable substitution to rewrite the first term containing the Dirac delta function to an integral that integrates over the edge, that is, over the regions where $\alpha_i(x,y) = 0$:
 $$\iint \delta(\alpha_i(x,y))\nabla \alpha_i(x,y) f_i(x,y)dxdy
-= \int_{\alpha_i(x,y)=0} \frac{\nabla \alpha_i(x,y)}{\lVert \nabla_{x,y} \alpha_i(x,y) \rVert} f_i(x,y)d\sigma(x,y) $$
+= \int_{\alpha_i(x,y)=0} \frac{\nabla \alpha_i(x,y)}{\lVert \nabla_{x,y} \alpha_i(x,y) \rVert} f_i(x,y)d\sigma(x,y)$$
 
 where $\lVert \nabla_{x,y} \alpha_i(x,y) \rVert$ is the $L^2$ length of the gradient of the edge equations $\alpha_i$ with respect to $x,y$, which takes the Jacobian of the variable substitution into account. $\sigma(x,y)$ is the measure of the length on the edge. (*Sorry for my poor math as I currently can't understand how this variable substitution is done and how can this help for differentiable.*)
 
 The gradients of the edge equations $\alpha_i$ are:
-$$\begin{aligned}
+$$\begin{align}
 \lVert \nabla_{x,y} \alpha_i \rVert = \sqrt{(a_x - b_x)^2 + (a_y - b_y)^2}\\
 \frac{\partial a_i}{\partial a_x} = b_y - y, \frac{\partial a_i}{\partial a_y} = x - b_x\\
 \frac{\partial a_i}{\partial b_x} = y - a_y, \frac{\partial a_i}{\partial b_y} = a_x - x\\
 \frac{\partial a_i}{\partial x} = a_y - b_y, \frac{\partial a_i}{\partial y} = b_x - a_x
-\end{aligned}$$
+\end{align}$$
 
 As a byproduct of the derivation, we also obtain the screen space gradients $\partial x$ and $\partial y$. We can obtain the gradient with respect to other parameters, such as camera parameters, 3D vertex positions, or vertex normals by propagating the derivatives from the projected triangle vertices
 using the chain rule:
